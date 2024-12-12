@@ -28,14 +28,25 @@ jobs:
     - name: Extract Docker Compose services
       id: extract
       run: |
-        services=$(docker compose config --services)
-        echo "services=$services" >> $GITHUB_OUTPUT
+        echo "Docker Compose file content:"
+        cat docker-compose.yaml
+        
+        echo "Available services:"
+        docker compose config --services
+        
+        SERVICES=$(docker compose config --services | jq -R -s -c 'split("\n")[:-1]')
+        echo "Formatted services: ${SERVICES}"
+        echo "services=${SERVICES}" >> $GITHUB_OUTPUT
         
     - name: Build and push Docker images
       run: |
-        services="${{ steps.extract.outputs.services }}"
-        for service in $services; do
-          # 从 docker-compose.yaml 获取镜像名称
+        # 读取服务列表并转换回数组
+        SERVICES=$(echo '${{ steps.services.outputs.services }}' | jq -r '.[]')
+        
+        for service in $SERVICES; do
+          echo "Processing service: $service"
+          
+          # 获取镜像名称
           image_name=$(docker compose config | grep "image:" | grep "$service" | awk '{print $2}')
           
           if [ -z "$image_name" ]; then
