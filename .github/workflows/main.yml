@@ -40,22 +40,7 @@ jobs:
         
     - name: Build and push Docker images
       run: |
-        # 直接循环固定的服务列表
-        for service in redis playwright-service api worker; do
-          echo "Processing service: $service"
-          
-          # 获取镜像名称
-          image_name=$(docker compose config | grep "image:" | grep "$service" | awk '{print $2}')
-          
-          if [ -z "$image_name" ]; then
-            # 如果没有指定镜像名称，使用默认格式
-            image_name="registry.cn-hangzhou.aliyuncs.com/sync_dockerhub/$service:latest"
-          fi
-          
-          echo "Building image: $image_name"
-          
+          #image_name="registry.cn-hangzhou.aliyuncs.com/sync_dockerhub/$service:latest"
           # 构建和推送
-          docker compose build $service
-          docker tag $service $image_name
-          docker push $image_name
-        done
+          docker compose build
+          docker compose push
