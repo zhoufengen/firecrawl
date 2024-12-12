@@ -40,7 +40,7 @@ jobs:
           
           if [ -z "$image_name" ]; then
             # 如果没有指定镜像名称，使用默认格式
-            image_name="registry.cn-hangzhou.aliyuncs.com/your-namespace/$service:latest"
+            image_name="registry.cn-hangzhou.aliyuncs.com/sync_dockerhub/$service:latest"
           fi
           
           # 构建并推送镜像
