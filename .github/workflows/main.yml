@@ -40,10 +40,8 @@ jobs:
         
     - name: Build and push Docker images
       run: |
-        # 读取服务列表并转换回数组
-        SERVICES=$(echo '${{ steps.services.outputs.services }}' | jq -r '.[]')
-        
-        for service in $SERVICES; do
+        # 直接循环固定的服务列表
+        for service in redis playwright-service api worker; do
           echo "Processing service: $service"
           
           # 获取镜像名称
@@ -54,7 +52,9 @@ jobs:
             image_name="registry.cn-hangzhou.aliyuncs.com/sync_dockerhub/$service:latest"
           fi
           
-          # 构建并推送镜像
+          echo "Building image: $image_name"
+          
+          # 构建和推送
           docker compose build $service
           docker tag $service $image_name
           docker push $image_name
